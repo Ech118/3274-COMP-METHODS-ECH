@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 
-double exp(int);
+double exp(double);
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-double exp(int x)
+double exp(double x)
 {
   double term = 1.0;
   double sum = 1.0;
