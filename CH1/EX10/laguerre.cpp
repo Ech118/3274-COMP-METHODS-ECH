@@ -3,7 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <sstream>
-
+#include <algorithm>
 double assoc_laguerre(int n, int m, double x) {
   if (n == 0) return 1.0;
   if (n == 1) return 1.0 + m - x;
@@ -59,7 +59,7 @@ std::vector<std::string> getCanvas(int width, int height) {
   }
   
   // Draw vertical axis (x = 0)
-  int y_axis_col = width / 2;
+  int y_axis_col = 0;
   for (int r = 0; r < height; ++r)   canvas[r][y_axis_col] = '|';
 
   // Draw origin
@@ -73,14 +73,19 @@ void plotLegendre(std::vector<std::string> & canvas , int l) {
   // Do the mathematical part, evaluating the function:
   std::vector<double> values(width);
   for (int col = 0; col < width; ++col) {
-    double x = -1.0 + 2.0 * col / (width - 1);
+    double x = 0 + 10.0 * col / (width - 1);
     double y = assoc_laguerre(l, 1, x);
     values[col] = y;
   }
+
+  double yScalePlus=*std::max_element(values.begin(),values.end());
+  double yScaleMnus=*std::min_element(values.begin(),values.end());
+  double yScale    = std::max(yScalePlus,std::abs(yScaleMnus));
+
   // Plot curve
   for (int col = 0; col < width; ++col) {
-    int row =  (int) std::round( (1.0 - values[col]) / 2.0 * (height-1)); 
-    canvas[row][col] = '*';
+    int row =  (int) std::round( (1.0 - values[col]/yScale) / 2.0 * (height-1)); 
+    if (row>=0 && row<height) canvas[row][col] = '*';
   }
    
   std::cout << "\nAssociated Laguerre Polynomial L_" << l << "^1(x)\n" << std::endl;

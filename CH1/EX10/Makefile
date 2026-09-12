@@ -1,8 +1,8 @@
 CXX = c++
 CXXFLAGS = -std=c++20 -Wall
 
-TARGET = legendre
-SOURCES = legendre.cpp
+TARGET = laguerre
+SOURCES = laguerre.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 all: $(TARGET)
