@@ -29,7 +29,7 @@ int main()
         double total = pop(0) + pop(1) + pop(2);
 
         cout << fixed << setprecision(1) << t << " | ";
-        cout << setprecision(6) << pop(0)/total << " | ";
+        cout << setprecision(6) << pop(0) << " | ";
         cout << pop(1)/total << " | ";
         cout << pop(2)/total << endl;
     }

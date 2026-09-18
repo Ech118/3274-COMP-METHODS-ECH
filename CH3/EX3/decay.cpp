@@ -13,7 +13,7 @@ Matrix3d buildDecayMatrix(double hl1, double hl2, double hl3)
     double lambda3 = log(2.0) / hl3;
 
     Matrix3d Lambda;
-    Lambda << -lambda1, 0, lambda3,
+    Lambda << -lambda1, 0, 0 ,
               lambda1, -lambda2, 0,
               0, lambda2, -lambda3;
 
