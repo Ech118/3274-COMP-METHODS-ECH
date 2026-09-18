@@ -1,0 +1,2 @@
+set(__QT_DEPLOY_TARGET_LegendreRoots_FILE /Users/eliashadjipanayis/CS/3274/CH4/EX3/LegendreRoots/build/LegendreRoots)
+set(__QT_DEPLOY_TARGET_LegendreRoots_TYPE EXECUTABLE)
