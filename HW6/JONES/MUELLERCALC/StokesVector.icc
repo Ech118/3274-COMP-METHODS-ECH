@@ -1,0 +1,57 @@
+#include <cmath>
+#include <stdexcept>
+
+inline StokesVector::StokesVector(StokesVector::Type type, double intensity) {
+
+  if (type==Horizontal)        m_s << 1,  1,  0,  0;
+  else if (type==Vertical)     m_s << 1, -1,  0,  0;
+  else if (type==Diagonal)     m_s << 1,  0,  1,  0;
+  else if (type==Antidiagonal) m_s << 1,  0, -1,  0;
+  else if (type==Right)        m_s << 1,  0,  0,  1;
+  else if (type==Left)         m_s << 1,  0,  0, -1;
+  else if (type==Unpolarized)  m_s << 1,  0,  0,  0;
+  m_s *= intensity;
+
+}
+
+inline StokesVector::StokesVector(double s0, double s1, double s2, double s3):m_s(s0,s1,s2,s3) {}
+
+inline StokesVector::StokesVector(const Eigen::Vector4d & s):m_s(s) {}
+
+inline const Eigen::Vector4d & StokesVector::vector() const {
+  return m_s;
+}
+
+inline double StokesVector::intensity() const {
+  return m_s(0);
+}
+
+inline double StokesVector::degreeOfPolarization() const {
+  return m_s(0)==0 ? 0 : m_s.tail<3>().norm()/m_s(0);
+}
+
+inline double & StokesVector::operator () (unsigned int i) {
+  if (i>3) throw std::range_error("Index out of range");
+  return m_s(i);
+}
+
+inline const double & StokesVector::operator () (unsigned int i) const {
+  if (i>3) throw std::range_error("Index out of range");
+  return m_s(i);
+}
+
+inline std::ostream & operator << (std::ostream & o, const StokesVector & v) {
+  return o << "[" << v(0) << "," << v(1) << "," << v(2) << "," << v(3) << "]";
+}
+
+inline StokesVector operator + (const StokesVector & v1, const StokesVector & v2) {
+  return StokesVector(v1.vector()+v2.vector());
+}
+
+inline StokesVector operator * (const StokesVector & v, double c) {
+  return StokesVector(v.vector()*c);
+}
+
+inline StokesVector operator * (double c, const StokesVector & v) {
+  return v*c;
+}

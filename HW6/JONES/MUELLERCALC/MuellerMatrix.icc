@@ -1,0 +1,63 @@
+#include <cmath>
+#include <stdexcept>
+
+inline MuellerMatrix::MuellerMatrix(MuellerMatrix::Type type) {
+
+  // Polarizers (factor 1/2 applied below), quarter-wave plates, and a depolarizer
+  if (type==Horizontal)          m_a << 1, 1, 0, 0,   1, 1, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0;
+  else if (type==Vertical)       m_a << 1,-1, 0, 0,  -1, 1, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0;
+  else if (type==Diagonal)       m_a << 1, 0, 1, 0,   0, 0, 0, 0,   1, 0, 1, 0,   0, 0, 0, 0;
+  else if (type==Antidiagonal)   m_a << 1, 0,-1, 0,   0, 0, 0, 0,  -1, 0, 1, 0,   0, 0, 0, 0;
+  else if (type==Right)          m_a << 1, 0, 0, 1,   0, 0, 0, 0,   0, 0, 0, 0,   1, 0, 0, 1;
+  else if (type==Left)           m_a << 1, 0, 0,-1,   0, 0, 0, 0,   0, 0, 0, 0,  -1, 0, 0, 1;
+  else if (type==Identity)       m_a.setIdentity();
+  else if (type==FastHorizontal) m_a << 1, 0, 0, 0,   0, 1, 0, 0,   0, 0, 0,-1,   0, 0, 1, 0;
+  else if (type==FastVertical)   m_a << 1, 0, 0, 0,   0, 1, 0, 0,   0, 0, 0, 1,   0, 0,-1, 0;
+  else if (type==Depolarizer)    m_a << 1, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0;
+
+  if (type<=Left) m_a *= 0.5;
+
+}
+
+inline MuellerMatrix::MuellerMatrix(const Eigen::Matrix4d & m):m_a(m) {}
+
+inline const Eigen::Matrix4d & MuellerMatrix::matrix() const {
+  return m_a;
+}
+
+inline MuellerMatrix MuellerMatrix::LinearPolarizer(double theta) {
+  double c=cos(2*theta), s=sin(2*theta);
+  Eigen::Matrix4d m;
+  m << 1,   c,   s,   0,
+       c,   c*c, c*s, 0,
+       s,   c*s, s*s, 0,
+       0,   0,   0,   0;
+  return MuellerMatrix(0.5*m);
+}
+
+inline double & MuellerMatrix::operator () (unsigned int i, unsigned int j) {
+  if (i>3 || j>3) throw std::range_error("Index out of range");
+  return m_a(i,j);
+}
+
+inline const double & MuellerMatrix::operator () (unsigned int i, unsigned int j) const {
+  if (i>3 || j>3) throw std::range_error("Index out of range");
+  return m_a(i,j);
+}
+
+inline std::ostream & operator << (std::ostream & o, const MuellerMatrix & m) {
+  for (unsigned int i=0;i<4;i++) {
+    o << (i==0 ? "[" : " ");
+    for (unsigned int j=0;j<4;j++) o << m(i,j) << (j<3 ? " " : "");
+    o << (i==3 ? "]" : "\n");
+  }
+  return o;
+}
+
+inline MuellerMatrix operator* (const MuellerMatrix & m1, const MuellerMatrix & m2) {
+  return MuellerMatrix(m1.matrix()*m2.matrix());
+}
+
+inline StokesVector operator* (const MuellerMatrix & m, const StokesVector & v) {
+  return StokesVector(m.matrix()*v.vector());
+}
